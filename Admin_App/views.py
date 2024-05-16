@@ -4,7 +4,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 
+
 # Create your views here.
+def adminpanel(request):
+    users = User.objects.all()
+    user_data = []  # A list to hold user data (email and password)
+    
+    # Loop through users to extract email and password
+    for user in users:
+        user_data.append({'username': user.username, 'email': user.email, 'password': user.password})
+
+    return render(request, 'adminpanel.html', {'users': user_data})
 
 def home(request):
     if request.user.is_authenticated:
@@ -14,7 +24,7 @@ def home(request):
     else:
         return redirect(log_in)
 
-
+ 
 def log_in(request):
     if request.user.is_authenticated:
             return redirect('home')
