@@ -7,10 +7,18 @@ from django.contrib import messages
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        response =render(request,'home.html')
+        response['cache-Control'] = 'no-store'
+        return response
+    else:
+        return redirect(log_in)
 
 
 def log_in(request):
+    if request.user.is_authenticated:
+            return redirect('home')
+        
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
@@ -21,7 +29,11 @@ def log_in(request):
             return redirect('home')
         else:
             messages.error(request, "Invalid username or password")
-            
+    else:
+        # Display the login form.
+            response =render(request,'login.html')
+            response['cache-Control'] = 'no-store'
+            return response    
     return render(request, 'login.html')
 
 
