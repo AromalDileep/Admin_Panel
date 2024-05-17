@@ -47,16 +47,22 @@ def log_in(request):
     return render(request, 'login.html')
 
 
+
+
 def signup(request):
     if request.method == "POST":
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-        myuser = User.objects.create_user(username,email,password)
-        myuser.save()
-        return redirect('login')
+        if username and email and password:  # Check if all fields are provided
+            myuser = User.objects.create_user(username, email, password)
+            myuser.save()
+            return redirect('login')
+        else:
+            messages.error(request, "Please fill in all fields")
     return render(request, 'signup.html')
+
 
 def log_out(request):
       if request.method == 'POST':
