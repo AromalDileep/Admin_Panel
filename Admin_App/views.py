@@ -12,19 +12,31 @@ def adminpanel(request):
     
     # Loop through users to extract email and password
     for user in users:
-        user_data.append({'username': user.username, 'email': user.email, 'password': user.password})
+        user_data.append({'username': user.username, 'email': user.email})
 
     return render(request, 'adminpanel.html', {'users': user_data})
 
-def home(request):
-    if request.user.is_authenticated:
-        response =render(request,'home.html')
-        response['cache-Control'] = 'no-store'
-        return response
-    else:
-        return redirect(log_in)
 
- 
+def adminlogin(request):
+    admin_name = 'admin'
+    admin_password = "12345"
+    if request.method == 'POST':
+        username = request.POST['admin_name']
+        password = request.POST['admin_password']
+        if username == admin_name and password == admin_password:  
+            return redirect('adminpanel')
+        else:
+            messages.error(request, "Invalid username or password")
+    return render(request, 'adminlogin.html')    
+
+
+def admin_log_out(request):
+      if request.method == 'POST':
+          logout(request)
+          return redirect('adminlogin')
+      return redirect('adminlogin')
+
+
 def log_in(request):
     if request.user.is_authenticated:
             return redirect('home')
@@ -49,6 +61,16 @@ def log_in(request):
 
 
 
+
+def home(request):
+    if request.user.is_authenticated:
+        response =render(request,'home.html')
+        response['cache-Control'] = 'no-store'
+        return response
+    else:
+        return redirect(log_in)
+
+ 
 def signup(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -69,3 +91,15 @@ def log_out(request):
           logout(request)
           return redirect('login')
       return redirect('login')
+
+
+  
+def create(request):
+    if request.POST:
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        
+
+        
