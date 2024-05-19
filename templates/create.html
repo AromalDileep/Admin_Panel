@@ -40,7 +40,7 @@
 <div class="container d-flex justify-content-center align-items-center vh-100">
   <div class="card" style="width: 18rem;">
     <div class="card-body">
-      <h2 style="color: #4a4a4a;">SignUp</h2>
+      <h2 style="color: #4a4a4a;">Create</h2>
       <div class="bg-warning text-center">
         {% if messages %}
         {% for message in messages %}
@@ -63,9 +63,8 @@
           <label for="password" class="form-label">Password</label>
           <input type="password" class="form-control" id="password" name="password">
         </div>
-        <button type="submit" class="btn">SignUp</button>
+        <button type="submit" class="btn btn-primary">Create</button>
       </form>
-      <a href="{% url 'login' %}" style="color: #4a4a4a; text-decoration: none;">Click here to login</a>
     </div>
   </div>
 </div>

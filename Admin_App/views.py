@@ -53,8 +53,13 @@ def signup(request):
         password = request.POST.get('password')
 
         if username and email and password:  # Check if all fields are provided
-            User.objects.create_user(username, email, password).save()
-            return redirect('login')
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists")
+            elif User.objects.filter(email=email).exists():
+                messages.error(request, "Email already exists")
+            else:
+                User.objects.create_user(username, email, password).save()
+                return redirect('login')
         else:
             messages.error(request, "Please fill in all fields")
     return render(request, 'signup.html')
@@ -96,18 +101,25 @@ def log_out(request):
         return redirect('login')
     return redirect('login')
 
-
-# Create user view (it seems incomplete, needs more context to complete this function)
+# Create user view
 def create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        if username and email and password:
-            User.objects.create_user(username, email, password).save()
-            messages.success(request, "User created successfully")
-            return redirect('home')
+        if username and email and password:  # Check if all fields are provided
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists")
+            elif User.objects.filter(email=email).exists():
+                messages.error(request, "Email already exists")
+            else:
+                User.objects.create_user(username, email, password).save()
+                return redirect('adminpanel')
         else:
             messages.error(request, "Please fill in all fields")
     return render(request, 'create.html')
+
+
+def edituser(request):
+    pass
