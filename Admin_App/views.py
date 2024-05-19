@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import Q
 # Admin login view
 def adminlogin(request):
     admin_name = 'admin'
@@ -25,11 +25,17 @@ def adminpanel(request):
     if not request.session.get('admin_logged_in'):
         return redirect('adminlogin')
 
-    # Retrieve all users
-    users = User.objects.all()
+    # Get search query if present
+    query = request.GET.get('query', '')
+
+    # Filter users based on search query
+    if query:
+        users = User.objects.filter(Q(username__icontains=query) | Q(email__icontains=query))
+    else:
+        users = User.objects.all()
 
     # Render the admin panel template with the user data
-    response = render(request, 'adminpanel.html', {'users': users})
+    response = render(request, 'adminpanel.html', {'users': users, 'query': query})
     response['Cache-Control'] = 'no-store'  # Prevent caching
     return response
 
@@ -153,3 +159,12 @@ def deleteuser(request, user_id):
         return redirect('adminpanel')
 
     return render(request, 'delete.html', {'user': user})
+
+
+def admin_panel(request):
+    query = request.GET.get('query', '')
+    if query:
+        users = User.objects.filter(Q(username__icontains=query) | Q(email__icontains=query))
+    else:
+        users = User.objects.all()
+    return render(request, 'admin_panel.html', {'users': users})
