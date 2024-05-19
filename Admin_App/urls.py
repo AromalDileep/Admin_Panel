@@ -10,5 +10,6 @@ urlpatterns = [
     path('adminpanel/', views.adminpanel, name = 'adminpanel'),
     path('adminlogout/', views.adminlogout, name = 'adminlogout'),  # Correct reference
     path('create/', views.create, name = 'create'),
-    
+    path('edit/<int:user_id>/', views.edituser, name='edit'),
+        
 ]

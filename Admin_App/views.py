@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-
+from django.shortcuts import get_object_or_404
 # Admin login view
+
 def adminlogin(request):
     admin_name = 'admin'
     admin_password = '12345'
@@ -26,14 +27,9 @@ def adminpanel(request):
 
     # Retrieve all users
     users = User.objects.all()
-    user_data = []  # A list to hold user data (username and email)
-
-    # Loop through users to extract username and email
-    for user in users:
-        user_data.append({'username': user.username, 'email': user.email})
 
     # Render the admin panel template with the user data
-    response = render(request, 'adminpanel.html', {'users': user_data})
+    response = render(request, 'adminpanel.html', {'users': users})
     response['Cache-Control'] = 'no-store'  # Prevent caching
     return response
 
@@ -121,5 +117,26 @@ def create(request):
     return render(request, 'create.html')
 
 
-def edituser(request):
-    pass
+def edituser(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if username and email:  # Check if required fields are provided
+            user.username = username
+            user.email = email
+            if password:
+                user.set_password(password)
+
+            user.save()
+            messages.success(request, "User updated successfully")
+            return redirect('adminpanel')
+        else:
+            messages.error(request, "Please fill in all required fields")
+
+    return render(request, 'edit.html', {'user': user})
+
+    
