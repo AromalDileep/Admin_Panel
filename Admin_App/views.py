@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from django.shortcuts import get_object_or_404
-# Admin login view
+from django.contrib.auth.decorators import login_required
 
+# Admin login view
 def adminlogin(request):
     admin_name = 'admin'
     admin_password = '12345'
@@ -116,7 +116,7 @@ def create(request):
             messages.error(request, "Please fill in all fields")
     return render(request, 'create.html')
 
-
+# Edit user view
 def edituser(request, user_id):
     user = User.objects.get(id=user_id)
 
@@ -139,4 +139,17 @@ def edituser(request, user_id):
 
     return render(request, 'edit.html', {'user': user})
 
-    
+# Delete user view
+def deleteuser(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == "POST":
+        if request.user == user:
+            messages.error(request, "You cannot delete your own account.")
+            return redirect('adminpanel')
+
+        user.delete()
+        messages.success(request, "User deleted successfully.")
+        return redirect('adminpanel')
+
+    return render(request, 'delete.html', {'user': user})
